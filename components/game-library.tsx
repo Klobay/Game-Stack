@@ -1,11 +1,13 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
-import { Gamepad2, LayoutGrid, List, Ghost } from "lucide-react"
+import { Gamepad2, LayoutGrid, List, Ghost, LogOut } from "lucide-react"
 import { GameCard } from "@/components/game-card"
 import { GameSearch } from "@/components/game-search"
 import { useStatuses } from "@/lib/use-status"
+import { authClient } from "@/lib/auth-client"
 import { isHorror, type GameStatus } from "@/lib/types"
 
 type ListId = GameStatus | "horror"
@@ -17,10 +19,19 @@ const LISTS: { id: ListId; label: string }[] = [
   { id: "horror", label: "Horror Games" },
 ]
 
-export function GameLibrary() {
+export function GameLibrary({ userName }: { userName?: string }) {
+  const router = useRouter()
   const [activeList, setActiveList] = useState<ListId>("playing")
   const [view, setView] = useState<"grid" | "list">("grid")
+  const [signingOut, setSigningOut] = useState(false)
   const { statusMap, gamesByStatus, allGames, setStatus, clearStatus, count } = useStatuses()
+
+  async function handleSignOut() {
+    setSigningOut(true)
+    await authClient.signOut()
+    router.push("/sign-in")
+    router.refresh()
+  }
 
   const horrorGames = allGames.filter(isHorror)
 
@@ -49,11 +60,30 @@ export function GameLibrary() {
 
       <div className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
         <header className="flex flex-col gap-8 py-10 sm:py-14">
-          <div className="flex items-center gap-3">
-            <span className="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg shadow-primary/25">
-              <Gamepad2 className="size-6" />
-            </span>
-            <span className="font-display text-xl font-bold tracking-tight">Game Stack</span>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg shadow-primary/25">
+                <Gamepad2 className="size-6" />
+              </span>
+              <span className="font-display text-xl font-bold tracking-tight">Game Stack</span>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {userName ? (
+                <span className="hidden text-sm text-muted-foreground sm:inline">
+                  Hi, <span className="font-medium text-foreground">{userName}</span>
+                </span>
+              ) : null}
+              <button
+                type="button"
+                onClick={handleSignOut}
+                disabled={signingOut}
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-card/50 px-4 py-2 text-sm font-medium text-muted-foreground backdrop-blur-md transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
+              >
+                <LogOut className="size-4" />
+                Sign out
+              </button>
+            </div>
           </div>
 
           <motion.div
