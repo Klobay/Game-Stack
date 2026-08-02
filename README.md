@@ -2,7 +2,7 @@
 
 > A minimal, dark-mode dashboard designed to track your gaming library. Keep tabs on what you are **currently playing**, organize your backlog, and catalog your favorite **horror collections** in one clean workspace.
 >
-[https://better-better.vercel.app/]
+**Live demo:** [https://better-better.vercel.app/]
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W5N623QS8P)
 ---
