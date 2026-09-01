@@ -10,15 +10,17 @@ import { GameCard } from "@/components/game-card"
 import { GameSearch } from "@/components/game-search"
 import { useStatuses } from "@/lib/use-status"
 import { authClient } from "@/lib/auth-client"
-import { isHorror, type GameStatus } from "@/lib/types"
+import { isHorror, isOther, type GameStatus } from "@/lib/types"
 
-type ListId = GameStatus | "horror"
+type ListId = GameStatus | "horror" | "other" | "all"
 
 const LISTS: { id: ListId; label: string }[] = [
   { id: "playing", label: "Currently Playing" },
   { id: "played", label: "Played" },
   { id: "not_played", label: "Not Played" },
   { id: "horror", label: "Horror Games" },
+  { id: "other", label: "Other Games" },
+  { id: "all", label: "All Games" },
 ]
 
 export function GameLibrary({ userName }: { userName?: string }) {
@@ -26,7 +28,7 @@ export function GameLibrary({ userName }: { userName?: string }) {
   const [activeList, setActiveList] = useState<ListId>("playing")
   const [view, setView] = useState<"grid" | "list">("grid")
   const [signingOut, setSigningOut] = useState(false)
-  const { statusMap, gamesByStatus, allGames, setStatus, clearStatus, setHorrorExcluded, count } = useStatuses()
+  const { statusMap, gamesByStatus, allGames, setStatus, clearStatus, setTagExcluded, count } = useStatuses()
 
   async function handleSignOut() {
     setSigningOut(true)
@@ -36,14 +38,17 @@ export function GameLibrary({ userName }: { userName?: string }) {
   }
 
   const horrorGames = allGames.filter(isHorror)
+  const otherGames = allGames.filter(isOther)
 
-  const games = activeList === "horror" ? horrorGames : gamesByStatus(activeList)
+  const games = activeList === "horror" ? horrorGames : activeList === "other" ? otherGames : activeList === "all" ? allGames : gamesByStatus(activeList)
 
   const counts: Record<ListId, number> = {
     playing: gamesByStatus("playing").length,
     played: gamesByStatus("played").length,
     not_played: gamesByStatus("not_played").length,
     horror: horrorGames.length,
+    other: otherGames.length,
+    all: allGames.length,
   }
 
   const gridClass =
@@ -230,8 +235,7 @@ export function GameLibrary({ userName }: { userName?: string }) {
                       status={statusMap[game.id]}
                       onSet={setStatus}
                       onClear={clearStatus}
-                      onHorrorToggle={setHorrorExcluded}
-                      showHorrorControl={activeList === "horror" || isHorror(game)}
+                      onTagToggle={setTagExcluded}
                     />
                   ))}
                 </div>
