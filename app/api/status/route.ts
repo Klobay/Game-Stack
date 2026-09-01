@@ -49,8 +49,14 @@ export async function POST(request: NextRequest) {
     if (!VALID.includes(status)) {
       return NextResponse.json({ error: "Invalid status." }, { status: 400 })
     }
-    if (!game || typeof game.id !== "number") {
+    if (!game || typeof game.id !== "number" || typeof game.name !== "string" || game.name.trim().length === 0 || game.name.length > 120) {
       return NextResponse.json({ error: "Invalid game payload." }, { status: 400 })
+    }
+    if (game.background_image !== null && game.background_image !== undefined && (typeof game.background_image !== "string" || game.background_image.length > 2000)) {
+      return NextResponse.json({ error: "Invalid image URL." }, { status: 400 })
+    }
+    if (game.horrorExcluded !== undefined && typeof game.horrorExcluded !== "boolean") {
+      return NextResponse.json({ error: "Invalid horror preference." }, { status: 400 })
     }
 
     await db

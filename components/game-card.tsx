@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Star, Calendar, Check, Play, Bookmark, X } from "lucide-react"
+import { Star, Calendar, Check, Play, Bookmark, X, Ghost } from "lucide-react"
 import type { Game, GameStatus } from "@/lib/types"
 
 const platformIcon: Record<string, string> = {
@@ -80,6 +80,8 @@ export function GameCard({
   status,
   onSet,
   onClear,
+  onHorrorToggle,
+  showHorrorControl,
 }: {
   game: Game
   index: number
@@ -87,6 +89,8 @@ export function GameCard({
   status?: GameStatus
   onSet: (game: Game, status: GameStatus) => void
   onClear: (gameId: number) => void
+  onHorrorToggle: (game: Game, excluded: boolean) => void
+  showHorrorControl: boolean
 }) {
   const year = game.released ? new Date(game.released).getFullYear() : null
 
@@ -151,6 +155,7 @@ export function GameCard({
 
           <div className="mt-auto pt-1">
             <StatusControls game={game} current={status} onSet={onSet} onClear={onClear} />
+            {showHorrorControl ? <button type="button" onClick={() => onHorrorToggle(game, !game.horrorExcluded)} aria-label={game.horrorExcluded ? `Include ${game.name} in horror games` : `Remove ${game.name} from horror games`} className="mt-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary"><Ghost className="size-3" />{game.horrorExcluded ? "Include in horror" : "Remove horror tag"}</button> : null}
           </div>
         </div>
       </motion.article>

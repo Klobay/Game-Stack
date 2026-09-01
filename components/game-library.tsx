@@ -4,6 +4,8 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
 import { Gamepad2, LayoutGrid, List, Ghost, LogOut } from "lucide-react"
+import { ManualGameDialog } from "@/components/manual-game-dialog"
+import { AccountSettings } from "@/components/account-settings"
 import { GameCard } from "@/components/game-card"
 import { GameSearch } from "@/components/game-search"
 import { useStatuses } from "@/lib/use-status"
@@ -24,7 +26,7 @@ export function GameLibrary({ userName }: { userName?: string }) {
   const [activeList, setActiveList] = useState<ListId>("playing")
   const [view, setView] = useState<"grid" | "list">("grid")
   const [signingOut, setSigningOut] = useState(false)
-  const { statusMap, gamesByStatus, allGames, setStatus, clearStatus, count } = useStatuses()
+  const { statusMap, gamesByStatus, allGames, setStatus, clearStatus, setHorrorExcluded, count } = useStatuses()
 
   async function handleSignOut() {
     setSigningOut(true)
@@ -74,6 +76,7 @@ export function GameLibrary({ userName }: { userName?: string }) {
                   Hi, <span className="font-medium text-foreground">{userName}</span>
                 </span>
               ) : null}
+              <AccountSettings />
               <button
                 type="button"
                 onClick={handleSignOut}
@@ -107,7 +110,10 @@ export function GameLibrary({ userName }: { userName?: string }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
           >
-            <GameSearch statusMap={statusMap} onSet={setStatus} onClear={clearStatus} />
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <GameSearch statusMap={statusMap} onSet={setStatus} onClear={clearStatus} />
+              <ManualGameDialog onAdd={setStatus} />
+            </div>
           </motion.div>
 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -224,6 +230,8 @@ export function GameLibrary({ userName }: { userName?: string }) {
                       status={statusMap[game.id]}
                       onSet={setStatus}
                       onClear={clearStatus}
+                      onHorrorToggle={setHorrorExcluded}
+                      showHorrorControl={activeList === "horror" || isHorror(game)}
                     />
                   ))}
                 </div>
