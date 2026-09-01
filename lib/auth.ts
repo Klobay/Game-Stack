@@ -25,22 +25,15 @@ export const auth = betterAuth({
       }
     : undefined,
   trustedOrigins: [
-    ...(process.env.NODE_ENV === "development"
-      ? [
-          "http://localhost:3000",
-          ...(process.env.V0_RUNTIME_URL ? [process.env.V0_RUNTIME_URL] : []),
-          ...(process.env.V0_DEV_APP_URL ? [process.env.V0_DEV_APP_URL] : []),
-          ...(process.env.V0_BUILD_URL ? [process.env.V0_BUILD_URL] : []),
-          ...(process.env.V0_SANDBOX_URL ? [process.env.V0_SANDBOX_URL] : []),
-          "https://new-chat-5u4.v0.build",
-        ]
-      : []),
-    ...(process.env.NODE_ENV === "production"
-      ? [
-          ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
-          ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`] : []),
-        ]
-      : []),
+    "http://localhost:3000",
+    ...(process.env.V0_RUNTIME_URL ? [process.env.V0_RUNTIME_URL] : []),
+    ...(process.env.V0_DEV_APP_URL ? [process.env.V0_DEV_APP_URL] : []),
+    ...(process.env.V0_BUILD_URL ? [process.env.V0_BUILD_URL] : []),
+    ...(process.env.V0_SANDBOX_URL ? [process.env.V0_SANDBOX_URL] : []),
+    // Keep the previous v0 preview origin valid while existing previews are open.
+    "https://new-chat-5u4.v0.build",
+    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+    ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`] : []),
   ],
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
