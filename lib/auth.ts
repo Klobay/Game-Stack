@@ -3,15 +3,37 @@ import { pool } from "@/lib/db"
 
 const hasGoogle = Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)
 
+function origin(value?: string) {
+  if (!value) return undefined
+  try {
+    return new URL(value.includes("://") ? value : `https://${value}`).origin
+  } catch {
+    return undefined
+  }
+}
+
+const previewOrigin = origin(process.env.V0_RUNTIME_URL)
+const devOrigin = origin(process.env.V0_DEV_APP_URL)
+const buildOrigin = origin(process.env.V0_BUILD_URL)
+const sandboxOrigin = origin(process.env.V0_SANDBOX_URL)
+const vercelOrigin = origin(process.env.VERCEL_URL)
+const productionOrigin = origin(process.env.VERCEL_PROJECT_PRODUCTION_URL)
+const configuredBaseURL = origin(process.env.BETTER_AUTH_URL)
+const baseURL = configuredBaseURL ?? (process.env.NODE_ENV === "development" ? previewOrigin : undefined) ?? productionOrigin ?? vercelOrigin
+const trustedOrigins = Array.from(new Set([
+  "http://localhost:3000",
+  previewOrigin,
+  devOrigin,
+  buildOrigin,
+  sandboxOrigin,
+  "https://new-chat-5u4.v0.build",
+  vercelOrigin,
+  productionOrigin,
+].filter((value): value is string => Boolean(value))))
+
 export const auth = betterAuth({
   database: pool,
-  baseURL:
-    process.env.BETTER_AUTH_URL ??
-    (process.env.VERCEL_PROJECT_PRODUCTION_URL
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-      : process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : process.env.V0_RUNTIME_URL),
+  baseURL,
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
@@ -24,17 +46,10 @@ export const auth = betterAuth({
         },
       }
     : undefined,
-  trustedOrigins: [
-    "http://localhost:3000",
-    ...(process.env.V0_RUNTIME_URL ? [process.env.V0_RUNTIME_URL] : []),
-    ...(process.env.V0_DEV_APP_URL ? [process.env.V0_DEV_APP_URL] : []),
-    ...(process.env.V0_BUILD_URL ? [process.env.V0_BUILD_URL] : []),
-    ...(process.env.V0_SANDBOX_URL ? [process.env.V0_SANDBOX_URL] : []),
-    // Keep the previous v0 preview origin valid while existing previews are open.
-    "https://new-chat-5u4.v0.build",
-    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
-    ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`] : []),
-  ],
+  trustedOrigins: async (request) => {
+    const requestOrigin = request ? new URL(request.url).origin : undefined
+    return [...trustedOrigins, ...(requestOrigin ? [requestOrigin] : [])]
+  },
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day
