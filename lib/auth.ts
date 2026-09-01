@@ -46,7 +46,10 @@ export const auth = betterAuth({
         },
       }
     : undefined,
-  trustedOrigins,
+  trustedOrigins: async (request) => {
+    const requestOrigin = request ? new URL(request.url).origin : undefined
+    return [...trustedOrigins, ...(requestOrigin ? [requestOrigin] : [])]
+  },
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day
