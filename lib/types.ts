@@ -11,6 +11,7 @@ export interface Game {
   tags?: { id: number; name: string; slug: string }[]
   parent_platforms?: { platform: { id: number; name: string; slug: string } }[]
   horrorExcluded?: boolean
+  otherExcluded?: boolean
   isManual?: boolean
 }
 
@@ -20,6 +21,11 @@ export function isHorror(game: Game): boolean {
     const value = `${t.slug ?? ""} ${t.name ?? ""}`.toLowerCase()
     return value.includes("horror") || value.includes("survival-horror") || value.includes("survival horror")
   })
+}
+
+export function isOther(game: Game): boolean {
+  if (game.otherExcluded) return false
+  return !isHorror(game)
 }
 
 export interface GamesResponse { results: Game[]; count: number; next: string | null; error?: string }

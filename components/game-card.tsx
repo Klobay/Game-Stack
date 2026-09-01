@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Star, Calendar, Check, Play, Bookmark, X, Ghost } from "lucide-react"
+import { Star, Calendar, Check, Play, Bookmark, X, Ghost, Tags } from "lucide-react"
 import type { Game, GameStatus } from "@/lib/types"
 
 const platformIcon: Record<string, string> = {
@@ -73,6 +73,20 @@ function StatusControls({
   )
 }
 
+function TagControls({ game, onToggle }: { game: Game; onToggle: (game: Game, tag: "horror" | "other", excluded: boolean) => void }) {
+  const tags = [
+    { key: "horror" as const, label: "Horror", icon: Ghost, excluded: game.horrorExcluded },
+    { key: "other" as const, label: "Other", icon: Tags, excluded: game.otherExcluded },
+  ]
+  return <div className="flex flex-wrap items-center gap-1.5" aria-label="Game tags">
+    {tags.map(({ key, label, icon: Icon, excluded }) => (
+      <button key={key} type="button" aria-pressed={!excluded} aria-label={`${excluded ? "Add" : "Remove"} ${label} tag for ${game.name}`} onClick={() => onToggle(game, key, !excluded)} className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs transition-colors ${excluded ? "border-border bg-secondary text-muted-foreground" : "border-primary/40 bg-primary/10 text-primary"}`}>
+        <Icon className="size-3" />{excluded ? `Add ${label}` : label}
+      </button>
+    ))}
+  </div>
+}
+
 export function GameCard({
   game,
   index,
@@ -80,8 +94,7 @@ export function GameCard({
   status,
   onSet,
   onClear,
-  onHorrorToggle,
-  showHorrorControl,
+  onTagToggle,
 }: {
   game: Game
   index: number
@@ -89,8 +102,7 @@ export function GameCard({
   status?: GameStatus
   onSet: (game: Game, status: GameStatus) => void
   onClear: (gameId: number) => void
-  onHorrorToggle: (game: Game, excluded: boolean) => void
-  showHorrorControl: boolean
+  onTagToggle: (game: Game, tag: "horror" | "other", excluded: boolean) => void
 }) {
   const year = game.released ? new Date(game.released).getFullYear() : null
 
@@ -155,7 +167,7 @@ export function GameCard({
 
           <div className="mt-auto pt-1">
             <StatusControls game={game} current={status} onSet={onSet} onClear={onClear} />
-            {showHorrorControl ? <button type="button" onClick={() => onHorrorToggle(game, !game.horrorExcluded)} aria-label={game.horrorExcluded ? `Include ${game.name} in horror games` : `Remove ${game.name} from horror games`} className="mt-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary"><Ghost className="size-3" />{game.horrorExcluded ? "Include in horror" : "Remove horror tag"}</button> : null}
+            <TagControls game={game} onToggle={onTagToggle} />
           </div>
         </div>
       </motion.article>
@@ -234,6 +246,7 @@ export function GameCard({
 
         <div className="mt-auto border-t border-border pt-3">
           <StatusControls game={game} current={status} onSet={onSet} onClear={onClear} />
+          <TagControls game={game} onToggle={onTagToggle} />
         </div>
       </div>
     </motion.article>

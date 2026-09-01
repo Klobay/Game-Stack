@@ -32,11 +32,11 @@ export function useStatuses() {
     await mutate({ statuses: rows.filter((row) => row.game_id !== gameId) }, { revalidate: false })
     try { const response = await fetch(`/api/status?gameId=${gameId}`, { method: "DELETE" }); if (!response.ok) throw new Error("Could not remove game"); await mutate() } catch (error) { await mutate(previous, { revalidate: false }); throw error }
   }
-  async function setHorrorExcluded(game: Game, excluded: boolean) {
-    const updated = { ...game, horrorExcluded: excluded }
+  async function setTagExcluded(game: Game, tag: "horror" | "other", excluded: boolean) {
+    const updated = { ...game, [tag === "horror" ? "horrorExcluded" : "otherExcluded"]: excluded }
     const previous = data
     await mutate({ statuses: rows.map((row) => row.game_id === game.id ? { ...row, game: updated } : row) }, { revalidate: false })
     try { await save({ game: updated, status: rows.find((row) => row.game_id === game.id)?.status ?? "not_played" }) } catch (error) { await mutate(previous, { revalidate: false }); throw error }
   }
-  return { statusMap, gamesByStatus, allGames, setStatus, clearStatus, setHorrorExcluded, isLoading, count: rows.length }
+  return { statusMap, gamesByStatus, allGames, setStatus, clearStatus, setTagExcluded, isLoading, count: rows.length }
 }
