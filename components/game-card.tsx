@@ -75,15 +75,15 @@ function StatusControls({
   )
 }
 
-function TagControls({ game, onToggle }: { game: Game; onToggle: (game: Game, tag: "horror" | "other", excluded: boolean) => void }) {
+function TagControls({ game, onToggle }: { game: Game; onToggle: (game: Game, tag: "horror" | "other", active: boolean) => void }) {
   const tags = [
-    { key: "horror" as const, label: "Horror", icon: Ghost, excluded: game.horrorExcluded },
-    { key: "other" as const, label: "Other", icon: Tags, excluded: game.otherExcluded },
+    { key: "horror" as const, label: "Horror", icon: Ghost, active: game.horrorTagged ?? (!game.horrorExcluded && game.genres.concat(game.tags ?? []).some((tag) => `${tag.slug} ${tag.name}`.toLowerCase().includes("horror"))) },
+    { key: "other" as const, label: "Other Games", icon: Tags, active: game.otherTagged ?? !game.otherExcluded },
   ]
   return <div className="mt-2 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center" aria-label="Game tags">
-    {tags.map(({ key, label, icon: Icon, excluded }) => (
-      <button key={key} type="button" aria-pressed={!excluded} aria-label={`${excluded ? "Add" : "Remove"} ${label} tag for ${game.name}`} onClick={() => onToggle(game, key, !excluded)} className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs transition-colors ${excluded ? "border-border bg-secondary text-muted-foreground" : "border-primary/40 bg-primary/10 text-primary"}`}>
-        <Icon className="size-3" />{excluded ? `Add ${label}` : label}
+    {tags.map(({ key, label, icon: Icon, active }) => (
+      <button key={key} type="button" aria-pressed={active} aria-label={`${active ? "Remove" : "Add"} ${label} tag for ${game.name}`} onClick={() => onToggle(game, key, !active)} className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs transition-colors ${active ? "border-primary/40 bg-primary/10 text-primary" : "border-border bg-secondary text-muted-foreground"}`}>
+        <Icon className="size-3" />{active ? label : `Add ${label}`}
       </button>
     ))}
   </div>
