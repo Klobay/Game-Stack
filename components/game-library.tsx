@@ -28,7 +28,7 @@ export function GameLibrary({ userName }: { userName?: string }) {
   const [activeList, setActiveList] = useState<ListId>("playing")
   const [view, setView] = useState<"grid" | "list">("grid")
   const [signingOut, setSigningOut] = useState(false)
-  const { statusMap, gamesByStatus, allGames, setStatus, clearStatus, setTagExcluded, count } = useStatuses()
+  const { statusMap, gamesByStatus, allGames, setStatus, clearStatus, setTag, count } = useStatuses()
 
   async function handleSignOut() {
     setSigningOut(true)
@@ -157,28 +157,30 @@ export function GameLibrary({ userName }: { userName?: string }) {
               })}
             </div>
 
-            <div className="flex items-center gap-1 self-start rounded-lg border border-white/10 bg-card/50 p-1 backdrop-blur-md">
+            <div className="flex items-center gap-1 self-start rounded-xl border border-white/10 bg-card/50 p-1 backdrop-blur-md" aria-label="Change game layout">
               <button
                 type="button"
                 aria-label="Grid view"
                 aria-pressed={view === "grid"}
                 onClick={() => setView("grid")}
-                className={`rounded-md p-1.5 transition-colors ${
-                  view === "grid" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                className={`inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
+                  view === "grid" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <LayoutGrid className="size-4" />
+                <span className="hidden sm:inline">Grid</span>
               </button>
               <button
                 type="button"
                 aria-label="List view"
                 aria-pressed={view === "list"}
                 onClick={() => setView("list")}
-                className={`rounded-md p-1.5 transition-colors ${
-                  view === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                className={`inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
+                  view === "list" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <List className="size-4" />
+                <span className="hidden sm:inline">List</span>
               </button>
             </div>
           </div>
@@ -233,7 +235,7 @@ export function GameLibrary({ userName }: { userName?: string }) {
                       status={statusMap[game.id]}
                       onSet={setStatus}
                       onClear={clearStatus}
-                      onTagToggle={setTagExcluded}
+                      onTagToggle={setTag}
                     />
                   ))}
                 </div>

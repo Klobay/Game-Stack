@@ -78,7 +78,7 @@ function StatusControls({
   )
 }
 
-function TagControls({ game, onToggle }: { game: Game; onToggle: (game: Game, tag: "horror" | "other", active: boolean) => void }) {
+function TagControls({ game, onToggle }: { game: Game; onToggle: (game: Game, tag: "horror" | "other", enabled: boolean) => void }) {
   const tags = [
     {
       key: "horror" as const,
@@ -116,7 +116,6 @@ function TagControls({ game, onToggle }: { game: Game; onToggle: (game: Game, ta
           </button>
         ))}
       </div>
-      <p className="text-xs leading-relaxed text-muted-foreground">Selected tags place this game in the matching section.</p>
     </div>
   )
 }
@@ -136,7 +135,7 @@ export function GameCard({
   status?: GameStatus
   onSet: (game: Game, status: GameStatus) => void
   onClear: (gameId: number) => void
-  onTagToggle: (game: Game, tag: "horror" | "other", excluded: boolean) => void
+  onTagToggle: (game: Game, tag: "horror" | "other", enabled: boolean) => void
 }) {
   const year = game.released ? new Date(game.released).getFullYear() : null
 
@@ -146,9 +145,9 @@ export function GameCard({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: Math.min(index * 0.02, 0.3), ease: "easeOut" }}
-        className="flex flex-col gap-3 overflow-hidden rounded-xl border border-border bg-card p-3 sm:flex-row sm:gap-4"
+        className="flex flex-row gap-3 overflow-hidden rounded-xl border border-border bg-card p-3 sm:gap-4"
       >
-        <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-lg bg-muted sm:w-48">
+        <div className="relative aspect-[4/3] w-28 shrink-0 overflow-hidden rounded-lg bg-muted sm:aspect-[16/10] sm:w-48">
           {game.background_image ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
