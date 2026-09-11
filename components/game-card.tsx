@@ -39,36 +39,39 @@ function StatusControls({
   onClear?: (gameId: number) => void
 }) {
   return (
-    <div className="relative grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
-      {STATUS_BUTTONS.map(({ value, label, icon: Icon }, index) => {
-        const active = current === value
-        return (
-          <button
-            key={value}
-            type="button"
-            aria-pressed={active}
-            onClick={() => (active ? onClear(game.id) : onSet(game, value))}
-            className={`inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg border px-2.5 py-2 text-xs font-medium transition-colors sm:min-h-8 sm:rounded-md sm:py-1 ${
-              index === 2 ? "col-span-2 sm:col-span-1" : ""
-            } ${
-              active
-                ? "border-primary bg-primary text-primary-foreground"
-                : "border-border bg-secondary text-secondary-foreground hover:border-primary/50"
-            }`}
-          >
-            <Icon className="size-3.5 shrink-0" />
-            {label}
-          </button>
-        )
-      })}
+    <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-2 gap-2">
+        {STATUS_BUTTONS.map(({ value, label, icon: Icon }, index) => {
+          const active = current === value
+          return (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={active}
+              onClick={() => (active ? onClear(game.id) : onSet(game, value))}
+              className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-[background-color,border-color,color,transform] active:scale-[0.98] sm:min-h-9 sm:rounded-lg sm:py-1.5 sm:text-xs ${
+                index === 2 ? "col-span-2 sm:col-span-1" : ""
+              } ${
+                active
+                  ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                  : "border-border bg-secondary/70 text-secondary-foreground hover:border-primary/50 hover:bg-secondary"
+              }`}
+            >
+              <Icon className="size-4 shrink-0" />
+              {label}
+            </button>
+          )
+        })}
+      </div>
       {current ? (
         <button
           type="button"
           onClick={() => onClear(game.id)}
-          aria-label="Remove from list"
-          className="absolute right-0 top-0 inline-flex size-10 items-center justify-center rounded-full border border-border bg-secondary text-muted-foreground transition-colors hover:border-destructive/50 hover:text-destructive sm:static sm:size-auto sm:rounded-md sm:p-1"
+          aria-label={`Remove ${game.name} from this list`}
+          className="inline-flex min-h-9 w-full items-center justify-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-destructive/60 hover:bg-destructive/10 hover:text-destructive"
         >
-          <X className="size-4 sm:size-3" />
+          <X className="size-3.5" />
+          Remove from list
         </button>
       ) : null}
     </div>
@@ -77,16 +80,45 @@ function StatusControls({
 
 function TagControls({ game, onToggle }: { game: Game; onToggle: (game: Game, tag: "horror" | "other", active: boolean) => void }) {
   const tags = [
-    { key: "horror" as const, label: "Horror", icon: Ghost, active: game.horrorTagged ?? (!game.horrorExcluded && game.genres.concat(game.tags ?? []).some((tag) => `${tag.slug} ${tag.name}`.toLowerCase().includes("horror"))) },
-    { key: "other" as const, label: "Other Games", icon: Tags, active: game.otherTagged ?? !game.otherExcluded },
+    {
+      key: "horror" as const,
+      label: "Horror",
+      icon: Ghost,
+      active: game.horrorTagged ?? (!game.horrorExcluded && game.genres.concat(game.tags ?? []).some((tag) => `${tag.slug} ${tag.name}`.toLowerCase().includes("horror"))),
+    },
+    {
+      key: "other" as const,
+      label: "Other Games",
+      icon: Tags,
+      active: game.otherTagged ?? !game.otherExcluded,
+    },
   ]
-  return <div className="mt-2 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center" aria-label="Game tags">
-    {tags.map(({ key, label, icon: Icon, active }) => (
-      <button key={key} type="button" aria-pressed={active} aria-label={`${active ? "Remove" : "Add"} ${label} tag for ${game.name}`} onClick={() => onToggle(game, key, !active)} className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs transition-colors ${active ? "border-primary/40 bg-primary/10 text-primary" : "border-border bg-secondary text-muted-foreground"}`}>
-        <Icon className="size-3" />{active ? label : `Add ${label}`}
-      </button>
-    ))}
-  </div>
+
+  return (
+    <div className="flex flex-col gap-2" aria-label="Game tags">
+      <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">Sections</p>
+      <div className="grid grid-cols-2 gap-2">
+        {tags.map(({ key, label, icon: Icon, active }) => (
+          <button
+            key={key}
+            type="button"
+            aria-pressed={active}
+            aria-label={`${active ? "Remove" : "Add"} ${label} tag for ${game.name}`}
+            onClick={() => onToggle(game, key, !active)}
+            className={`inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border px-2 py-2 text-xs font-medium transition-[background-color,border-color,color,transform] active:scale-[0.98] sm:min-h-9 sm:rounded-lg ${
+              active
+                ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                : "border-border bg-secondary/70 text-muted-foreground hover:border-primary/50 hover:bg-secondary"
+            }`}
+          >
+            <Icon className="size-4 shrink-0" />
+            <span>{active ? label : `Add ${label}`}</span>
+          </button>
+        ))}
+      </div>
+      <p className="text-xs leading-relaxed text-muted-foreground">Selected tags place this game in the matching section.</p>
+    </div>
+  )
 }
 
 export function GameCard({
@@ -114,9 +146,9 @@ export function GameCard({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: Math.min(index * 0.02, 0.3), ease: "easeOut" }}
-        className="flex gap-3 overflow-hidden rounded-xl border border-border bg-card p-3 sm:gap-4"
+        className="flex flex-col gap-3 overflow-hidden rounded-xl border border-border bg-card p-3 sm:flex-row sm:gap-4"
       >
-        <div className="relative aspect-[16/10] w-40 shrink-0 overflow-hidden rounded-lg bg-muted sm:w-48">
+        <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-lg bg-muted sm:w-48">
           {game.background_image ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
