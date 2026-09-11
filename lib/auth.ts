@@ -19,7 +19,7 @@ const sandboxOrigin = origin(process.env.V0_SANDBOX_URL)
 const vercelOrigin = origin(process.env.VERCEL_URL)
 const productionOrigin = origin(process.env.VERCEL_PROJECT_PRODUCTION_URL)
 const configuredBaseURL = origin(process.env.BETTER_AUTH_URL)
-const baseURL = configuredBaseURL ?? (process.env.NODE_ENV === "development" ? previewOrigin : undefined) ?? productionOrigin ?? vercelOrigin
+const baseURL = configuredBaseURL ?? productionOrigin ?? vercelOrigin ?? previewOrigin ?? "http://localhost:3000"
 const trustedOrigins = Array.from(new Set([
   "http://localhost:3000",
   previewOrigin,

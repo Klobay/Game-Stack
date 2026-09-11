@@ -39,8 +39,8 @@ function StatusControls({
   onClear?: (gameId: number) => void
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-1.5">
-      {STATUS_BUTTONS.map(({ value, label, icon: Icon }) => {
+    <div className="relative grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
+      {STATUS_BUTTONS.map(({ value, label, icon: Icon }, index) => {
         const active = current === value
         return (
           <button
@@ -48,13 +48,15 @@ function StatusControls({
             type="button"
             aria-pressed={active}
             onClick={() => (active ? onClear(game.id) : onSet(game, value))}
-            className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-medium transition-colors ${
+            className={`inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg border px-2.5 py-2 text-xs font-medium transition-colors sm:min-h-8 sm:rounded-md sm:py-1 ${
+              index === 2 ? "col-span-2 sm:col-span-1" : ""
+            } ${
               active
                 ? "border-primary bg-primary text-primary-foreground"
                 : "border-border bg-secondary text-secondary-foreground hover:border-primary/50"
             }`}
           >
-            <Icon className="size-3" />
+            <Icon className="size-3.5 shrink-0" />
             {label}
           </button>
         )
@@ -64,9 +66,9 @@ function StatusControls({
           type="button"
           onClick={() => onClear(game.id)}
           aria-label="Remove from list"
-          className="inline-flex items-center rounded-md border border-border bg-secondary p-1 text-muted-foreground transition-colors hover:border-destructive/50 hover:text-destructive"
+          className="absolute right-0 top-0 inline-flex size-10 items-center justify-center rounded-full border border-border bg-secondary text-muted-foreground transition-colors hover:border-destructive/50 hover:text-destructive sm:static sm:size-auto sm:rounded-md sm:p-1"
         >
-          <X className="size-3" />
+          <X className="size-4 sm:size-3" />
         </button>
       ) : null}
     </div>
@@ -78,7 +80,7 @@ function TagControls({ game, onToggle }: { game: Game; onToggle: (game: Game, ta
     { key: "horror" as const, label: "Horror", icon: Ghost, excluded: game.horrorExcluded },
     { key: "other" as const, label: "Other", icon: Tags, excluded: game.otherExcluded },
   ]
-  return <div className="flex flex-wrap items-center gap-1.5" aria-label="Game tags">
+  return <div className="mt-2 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center" aria-label="Game tags">
     {tags.map(({ key, label, icon: Icon, excluded }) => (
       <button key={key} type="button" aria-pressed={!excluded} aria-label={`${excluded ? "Add" : "Remove"} ${label} tag for ${game.name}`} onClick={() => onToggle(game, key, !excluded)} className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs transition-colors ${excluded ? "border-border bg-secondary text-muted-foreground" : "border-primary/40 bg-primary/10 text-primary"}`}>
         <Icon className="size-3" />{excluded ? `Add ${label}` : label}
@@ -122,6 +124,7 @@ export function GameCard({
               alt={`${game.name} cover art`}
               crossOrigin="anonymous"
               loading="lazy"
+              decoding="async"
               className="h-full w-full object-cover"
             />
           ) : (
