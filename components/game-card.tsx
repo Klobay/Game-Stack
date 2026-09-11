@@ -112,7 +112,7 @@ export function GameCard({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: Math.min(index * 0.02, 0.3), ease: "easeOut" }}
-        className="flex gap-4 overflow-hidden rounded-xl border border-border bg-card p-3"
+        className="flex gap-3 overflow-hidden rounded-xl border border-border bg-card p-3 sm:gap-4"
       >
         <div className="relative aspect-[16/10] w-40 shrink-0 overflow-hidden rounded-lg bg-muted sm:w-48">
           {game.background_image ? (

@@ -43,10 +43,10 @@ export function AuthForm({ mode }: { mode: Mode }) {
   }
 
   return (
-    <div className="relative flex min-h-dvh items-center justify-center overflow-hidden px-4">
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -left-24 -top-24 size-96 rounded-full bg-primary/20 blur-3xl" />
-        <div className="absolute bottom-0 right-0 size-96 rounded-full bg-accent/20 blur-3xl" />
+    <div className="relative flex min-h-dvh items-center justify-center overflow-hidden px-4 py-6 sm:px-6">
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute -left-24 -top-24 size-96 rounded-full bg-primary/15 blur-3xl motion-reduce:hidden" />
+        <div className="absolute bottom-0 right-0 size-96 rounded-full bg-accent/15 blur-3xl motion-reduce:hidden" />
       </div>
 
       <motion.div
