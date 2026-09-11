@@ -58,6 +58,12 @@ export async function POST(request: NextRequest) {
     if (game.horrorExcluded !== undefined && typeof game.horrorExcluded !== "boolean") {
       return NextResponse.json({ error: "Invalid horror preference." }, { status: 400 })
     }
+    if (game.horrorTagged !== undefined && typeof game.horrorTagged !== "boolean") {
+      return NextResponse.json({ error: "Invalid horror tag." }, { status: 400 })
+    }
+    if (game.otherTagged !== undefined && typeof game.otherTagged !== "boolean") {
+      return NextResponse.json({ error: "Invalid other-games tag." }, { status: 400 })
+    }
 
     await db
       .insert(gameStatus)

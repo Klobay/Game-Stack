@@ -28,7 +28,7 @@ export function GameLibrary({ userName }: { userName?: string }) {
   const [activeList, setActiveList] = useState<ListId>("playing")
   const [view, setView] = useState<"grid" | "list">("grid")
   const [signingOut, setSigningOut] = useState(false)
-  const { statusMap, gamesByStatus, allGames, setStatus, clearStatus, setTagExcluded, count } = useStatuses()
+  const { statusMap, gamesByStatus, allGames, setStatus, clearStatus, setTag, count } = useStatuses()
 
   async function handleSignOut() {
     setSigningOut(true)
@@ -58,15 +58,13 @@ export function GameLibrary({ userName }: { userName?: string }) {
 
   return (
     <div className="relative min-h-dvh overflow-hidden">
-      {/* Blurry ambient background */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -left-24 -top-24 size-96 rounded-full bg-primary/20 blur-3xl" />
-        <div className="absolute right-0 top-40 size-80 rounded-full bg-accent/20 blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 size-96 rounded-full bg-chart-3/15 blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute -left-24 -top-24 size-96 rounded-full bg-primary/15 blur-3xl motion-reduce:hidden" />
+        <div className="absolute right-0 top-40 size-80 rounded-full bg-accent/15 blur-3xl motion-reduce:hidden" />
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
-        <header className="flex flex-col gap-8 py-10 sm:py-14">
+      <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 sm:pb-20 lg:px-8">
+        <header className="flex flex-col gap-7 py-6 sm:gap-8 sm:py-10 lg:py-14">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <span className="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg shadow-primary/25">
@@ -159,28 +157,30 @@ export function GameLibrary({ userName }: { userName?: string }) {
               })}
             </div>
 
-            <div className="flex items-center gap-1 self-start rounded-lg border border-white/10 bg-card/50 p-1 backdrop-blur-md">
+            <div className="flex items-center gap-1 self-start rounded-xl border border-white/10 bg-card/50 p-1 backdrop-blur-md" aria-label="Change game layout">
               <button
                 type="button"
                 aria-label="Grid view"
                 aria-pressed={view === "grid"}
                 onClick={() => setView("grid")}
-                className={`rounded-md p-1.5 transition-colors ${
-                  view === "grid" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                className={`inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
+                  view === "grid" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <LayoutGrid className="size-4" />
+                <span className="hidden sm:inline">Grid</span>
               </button>
               <button
                 type="button"
                 aria-label="List view"
                 aria-pressed={view === "list"}
                 onClick={() => setView("list")}
-                className={`rounded-md p-1.5 transition-colors ${
-                  view === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                className={`inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
+                  view === "list" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <List className="size-4" />
+                <span className="hidden sm:inline">List</span>
               </button>
             </div>
           </div>
@@ -235,7 +235,7 @@ export function GameLibrary({ userName }: { userName?: string }) {
                       status={statusMap[game.id]}
                       onSet={setStatus}
                       onClear={clearStatus}
-                      onTagToggle={setTagExcluded}
+                      onTagToggle={setTag}
                     />
                   ))}
                 </div>
