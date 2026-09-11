@@ -96,7 +96,6 @@ function TagControls({ game, onToggle }: { game: Game; onToggle: (game: Game, ta
 
   return (
     <div className="flex flex-col gap-2" aria-label="Game tags">
-      <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">Sections</p>
       <div className="grid grid-cols-2 gap-2">
         {tags.map(({ key, label, icon: Icon, active }) => (
           <button
