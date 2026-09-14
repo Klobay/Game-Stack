@@ -143,8 +143,8 @@ export function GameCard({
       <motion.article
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: Math.min(index * 0.02, 0.3), ease: "easeOut" }}
-        className="flex flex-row gap-3 overflow-hidden rounded-xl border border-border bg-card p-3 sm:gap-4"
+        transition={{ duration: 0.22, delay: Math.min(index * 0.012, 0.12), ease: "easeOut" }}
+        className="flex flex-row gap-3 overflow-hidden rounded-2xl border border-border bg-card p-3 shadow-sm sm:gap-4"
       >
         <div className="relative aspect-[4/3] w-28 shrink-0 overflow-hidden rounded-lg bg-muted sm:aspect-[16/10] sm:w-48">
           {game.background_image ? (
@@ -211,9 +211,9 @@ export function GameCard({
     <motion.article
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: Math.min(index * 0.03, 0.4), ease: "easeOut" }}
-      whileHover={{ y: -6 }}
-      className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card"
+      transition={{ duration: 0.24, delay: Math.min(index * 0.015, 0.15), ease: "easeOut" }}
+      whileHover={{ y: -3 }}
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-muted">
         {game.background_image ? (

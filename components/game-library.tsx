@@ -65,8 +65,8 @@ export function GameLibrary({ userName }: { userName?: string }) {
 
   const gridClass =
     view === "grid"
-      ? "grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-      : "flex flex-col gap-4"
+      ? "grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4"
+      : "flex flex-col gap-3 sm:gap-4"
 
   return (
     <div className="relative min-h-dvh overflow-hidden">
@@ -89,7 +89,7 @@ export function GameLibrary({ userName }: { userName?: string }) {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 sm:pb-20 lg:px-8">
-        <header className="flex flex-col gap-7 py-6 sm:gap-8 sm:py-10 lg:py-14">
+        <header className="flex flex-col gap-6 py-5 sm:gap-8 sm:py-10 lg:py-14">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <span className="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg shadow-primary/25">
@@ -145,7 +145,7 @@ export function GameLibrary({ userName }: { userName?: string }) {
           </motion.div>
 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div role="tablist" aria-label="Your lists" className="flex flex-wrap items-center gap-2">
+            <div role="tablist" aria-label="Your lists" className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-1 scrollbar-none sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
               {LISTS.map((list) => {
                 const selected = activeList === list.id
                 return (
@@ -155,7 +155,7 @@ export function GameLibrary({ userName }: { userName?: string }) {
                     role="tab"
                     aria-selected={selected}
                     onClick={() => setActiveList(list.id)}
-                    className={`relative inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium backdrop-blur-md transition-colors ${
+                    className={`relative inline-flex min-h-10 shrink-0 snap-start items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-medium backdrop-blur-md transition-colors ${
                       selected
                         ? "border-primary/60 text-primary-foreground"
                         : "border-white/10 bg-card/50 text-muted-foreground hover:border-primary/40 hover:text-foreground"
@@ -182,7 +182,7 @@ export function GameLibrary({ userName }: { userName?: string }) {
               })}
             </div>
 
-            <div className="flex items-center gap-1 self-start rounded-xl border border-white/10 bg-card/50 p-1 backdrop-blur-md" aria-label="Change game layout">
+            <div className="grid w-full grid-cols-2 items-center gap-1 rounded-xl border border-white/10 bg-card/50 p-1 backdrop-blur-md sm:w-auto" aria-label="Change game layout">
               <button
                 type="button"
                 aria-label="Grid view"
@@ -238,11 +238,10 @@ export function GameLibrary({ userName }: { userName?: string }) {
               </motion.div>
             ) : (
               <motion.div
-                key={`${activeList}-${view}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.25 }}
+                key={activeList}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
               >
                 <div className="mb-5">
                   <p className="text-sm text-muted-foreground">
