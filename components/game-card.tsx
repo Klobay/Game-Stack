@@ -68,10 +68,10 @@ function StatusControls({
           type="button"
           onClick={() => onClear(game.id)}
           aria-label={`Remove ${game.name} from this list`}
-          className="inline-flex min-h-9 w-full items-center justify-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-destructive/60 hover:bg-destructive/10 hover:text-destructive"
+          className="inline-flex min-h-8 w-fit self-start items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:border-destructive/40 hover:text-destructive"
         >
-          <X className="size-3.5" />
-          Remove from list
+          <X className="size-3" />
+          Remove
         </button>
       ) : null}
     </div>
