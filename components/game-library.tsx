@@ -54,7 +54,13 @@ export function GameLibrary({ userName }: { userName?: string }) {
   const playingGames = gamesByStatus("playing")
   const continueGames = playingGames.slice(0, 4)
 
-  const games = activeList === "horror" ? horrorGames : activeList === "other" ? otherGames : activeList === "all" ? allGames : playingGames
+  const games = activeList === "horror"
+    ? horrorGames
+    : activeList === "other"
+      ? otherGames
+      : activeList === "all"
+        ? allGames
+        : gamesByStatus(activeList)
 
   const counts: Record<ListId, number> = {
     playing: gamesByStatus("playing").length,
@@ -213,9 +219,8 @@ export function GameLibrary({ userName }: { userName?: string }) {
           </div>
         </header>
 
-        {continueGames.length > 0 ? (
-          <section aria-labelledby="continue-title" className="mb-10 rounded-2xl border border-primary/15 bg-card/40 p-4 sm:p-5">
-            <div className="mb-4 flex items-end justify-between gap-4">
+        <section aria-labelledby="continue-title" className="mb-10 rounded-2xl border border-primary/15 bg-card/40 p-4 sm:p-5">
+          <div className="mb-4 flex items-end justify-between gap-4">
               <div>
                 <div className="mb-2 flex items-center gap-2 text-primary">
                   <Play className="size-4 fill-current" />
@@ -230,23 +235,30 @@ export function GameLibrary({ userName }: { userName?: string }) {
               >
                 See all <ArrowRight className="size-3.5" />
               </button>
-            </div>
+          </div>
+          {continueGames.length > 0 ? (
             <div className={view === "grid" ? "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4" : "flex flex-col gap-3"}>
-              {continueGames.map((game, i) => (
-                <GameCard
-                  key={`continue-${game.id}`}
-                  game={game}
-                  index={i}
-                  view={view}
-                  status={statusMap[game.id]}
-                  onSet={setStatus}
-                  onClear={clearStatus}
-                  onTagToggle={handleTagToggle}
-                />
-              ))}
-            </div>
+                {continueGames.map((game, i) => (
+                  <GameCard
+                    key={`continue-${game.id}`}
+                    game={game}
+                    index={i}
+                    view={view}
+                    status={statusMap[game.id]}
+                    onSet={setStatus}
+                    onClear={clearStatus}
+                    onTagToggle={handleTagToggle}
+                  />
+                ))}
+              </div>
+            ) : (
+              <button type="button" onClick={() => setActiveList("playing")} className="flex w-full flex-col items-center gap-2 rounded-xl border border-dashed border-border px-4 py-8 text-center transition-colors hover:border-primary/50 hover:bg-primary/5">
+                <Play className="size-6 text-muted-foreground" />
+                <span className="text-sm font-medium">Nothing queued yet</span>
+                <span className="text-xs text-muted-foreground">Mark a game as Playing to add it here.</span>
+              </button>
+            )}
           </section>
-        ) : null}
 
         <section aria-live="polite">
           <AnimatePresence mode="wait">

@@ -33,7 +33,7 @@ export function isHorror(game: Game): boolean {
 export function isOther(game: Game): boolean {
   if (game.otherTagged !== undefined) return game.otherTagged
   if (game.otherExcluded) return false
-  return !isHorror(game)
+  return true
 }
 
 export interface GamesResponse { results: Game[]; count: number; next: string | null; error?: string }
