@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
-import { Gamepad2, LayoutGrid, List, Ghost, LogOut } from "lucide-react"
+import { ArrowRight, Gamepad2, LayoutGrid, List, Ghost, LogOut, Play } from "lucide-react"
 import { ManualGameDialog } from "@/components/manual-game-dialog"
 import { AccountSettings } from "@/components/account-settings"
 import { GameCard } from "@/components/game-card"
@@ -51,8 +51,10 @@ export function GameLibrary({ userName }: { userName?: string }) {
 
   const horrorGames = allGames.filter(isHorror)
   const otherGames = allGames.filter(isOther)
+  const playingGames = gamesByStatus("playing")
+  const continueGames = playingGames.slice(0, 4)
 
-  const games = activeList === "horror" ? horrorGames : activeList === "other" ? otherGames : activeList === "all" ? allGames : gamesByStatus(activeList)
+  const games = activeList === "horror" ? horrorGames : activeList === "other" ? otherGames : activeList === "all" ? allGames : playingGames
 
   const counts: Record<ListId, number> = {
     playing: gamesByStatus("playing").length,
@@ -210,6 +212,41 @@ export function GameLibrary({ userName }: { userName?: string }) {
             </div>
           </div>
         </header>
+
+        {continueGames.length > 0 ? (
+          <section aria-labelledby="continue-title" className="mb-10 rounded-2xl border border-primary/15 bg-card/40 p-4 sm:p-5">
+            <div className="mb-4 flex items-end justify-between gap-4">
+              <div>
+                <div className="mb-2 flex items-center gap-2 text-primary">
+                  <Play className="size-4 fill-current" />
+                  <span className="text-xs font-semibold uppercase tracking-[0.14em]">Pick up where you left off</span>
+                </div>
+                <h2 id="continue-title" className="font-display text-2xl font-semibold tracking-tight">Continue next time</h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveList("playing")}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground"
+              >
+                See all <ArrowRight className="size-3.5" />
+              </button>
+            </div>
+            <div className={view === "grid" ? "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4" : "flex flex-col gap-3"}>
+              {continueGames.map((game, i) => (
+                <GameCard
+                  key={`continue-${game.id}`}
+                  game={game}
+                  index={i}
+                  view={view}
+                  status={statusMap[game.id]}
+                  onSet={setStatus}
+                  onClear={clearStatus}
+                  onTagToggle={handleTagToggle}
+                />
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <section aria-live="polite">
           <AnimatePresence mode="wait">
