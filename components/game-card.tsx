@@ -102,7 +102,7 @@ function TagControls({ game, onToggle }: { game: Game; onToggle: (game: Game, ta
             key={key}
             type="button"
             aria-pressed={active}
-            aria-label={`${active ? "Remove" : "Add"} ${label} tag for ${game.name}`}
+            aria-label={`${active ? "Remove from" : "Add to"} ${label} for ${game.name}`}
             onClick={() => onToggle(game, key, !active)}
             className={`inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border px-2 py-2 text-xs font-medium transition-[background-color,border-color,color,transform] active:scale-[0.98] sm:min-h-9 sm:rounded-lg ${
               active
@@ -111,7 +111,7 @@ function TagControls({ game, onToggle }: { game: Game; onToggle: (game: Game, ta
             }`}
           >
             <Icon className="size-4 shrink-0" />
-            <span>{active ? label : `Add ${label}`}</span>
+            <span>{active ? `In ${label}` : `Add to ${label}`}</span>
           </button>
         ))}
       </div>
@@ -143,8 +143,8 @@ export function GameCard({
       <motion.article
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: Math.min(index * 0.02, 0.3), ease: "easeOut" }}
-        className="flex flex-row gap-3 overflow-hidden rounded-xl border border-border bg-card p-3 sm:gap-4"
+        transition={{ duration: 0.22, delay: Math.min(index * 0.012, 0.12), ease: "easeOut" }}
+        className="flex flex-row gap-3 overflow-hidden rounded-2xl border border-border bg-card p-3 shadow-sm sm:gap-4"
       >
         <div className="relative aspect-[4/3] w-28 shrink-0 overflow-hidden rounded-lg bg-muted sm:aspect-[16/10] sm:w-48">
           {game.background_image ? (
@@ -211,9 +211,9 @@ export function GameCard({
     <motion.article
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: Math.min(index * 0.03, 0.4), ease: "easeOut" }}
-      whileHover={{ y: -6 }}
-      className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card"
+      transition={{ duration: 0.24, delay: Math.min(index * 0.015, 0.15), ease: "easeOut" }}
+      whileHover={{ y: -3 }}
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-muted">
         {game.background_image ? (

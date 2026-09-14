@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
-import { Gamepad2, LayoutGrid, List, Ghost, LogOut } from "lucide-react"
+import { ArrowRight, Gamepad2, LayoutGrid, List, Ghost, LogOut, Play } from "lucide-react"
 import { ManualGameDialog } from "@/components/manual-game-dialog"
 import { AccountSettings } from "@/components/account-settings"
 import { GameCard } from "@/components/game-card"
@@ -28,7 +28,19 @@ export function GameLibrary({ userName }: { userName?: string }) {
   const [activeList, setActiveList] = useState<ListId>("playing")
   const [view, setView] = useState<"grid" | "list">("grid")
   const [signingOut, setSigningOut] = useState(false)
+  const [tagNotice, setTagNotice] = useState<string | null>(null)
   const { statusMap, gamesByStatus, allGames, setStatus, clearStatus, setTag, count } = useStatuses()
+
+  async function handleTagToggle(game: Parameters<typeof setTag>[0], tag: "horror" | "other", enabled: boolean) {
+    const label = tag === "horror" ? "Horror" : "Other Games"
+    setTagNotice(`${enabled ? "Added to" : "Removed from"} ${label}: ${game.name}`)
+    window.setTimeout(() => setTagNotice(null), 2600)
+    try {
+      await setTag(game, tag, enabled)
+    } catch {
+      setTagNotice("Could not save that tag. Please try again.")
+    }
+  }
 
   async function handleSignOut() {
     setSigningOut(true)
@@ -39,8 +51,10 @@ export function GameLibrary({ userName }: { userName?: string }) {
 
   const horrorGames = allGames.filter(isHorror)
   const otherGames = allGames.filter(isOther)
+  const playingGames = gamesByStatus("playing")
+  const continueGames = playingGames.slice(0, 4)
 
-  const games = activeList === "horror" ? horrorGames : activeList === "other" ? otherGames : activeList === "all" ? allGames : gamesByStatus(activeList)
+  const games = activeList === "horror" ? horrorGames : activeList === "other" ? otherGames : activeList === "all" ? allGames : playingGames
 
   const counts: Record<ListId, number> = {
     playing: gamesByStatus("playing").length,
@@ -53,18 +67,31 @@ export function GameLibrary({ userName }: { userName?: string }) {
 
   const gridClass =
     view === "grid"
-      ? "grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-      : "flex flex-col gap-4"
+      ? "grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4"
+      : "flex flex-col gap-3 sm:gap-4"
 
   return (
     <div className="relative min-h-dvh overflow-hidden">
+      <AnimatePresence>
+        {tagNotice ? (
+          <motion.div
+            initial={{ opacity: 0, y: -12, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+            role="status"
+            className="fixed inset-x-4 top-4 z-50 mx-auto max-w-md rounded-xl border border-primary/30 bg-card/95 px-4 py-3 text-center text-sm font-medium text-foreground shadow-xl shadow-black/20 backdrop-blur-md sm:left-auto sm:right-6 sm:inset-x-auto"
+          >
+            {tagNotice}
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -left-24 -top-24 size-96 rounded-full bg-primary/15 blur-3xl motion-reduce:hidden" />
         <div className="absolute right-0 top-40 size-80 rounded-full bg-accent/15 blur-3xl motion-reduce:hidden" />
       </div>
 
       <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 sm:pb-20 lg:px-8">
-        <header className="flex flex-col gap-7 py-6 sm:gap-8 sm:py-10 lg:py-14">
+        <header className="flex flex-col gap-6 py-5 sm:gap-8 sm:py-10 lg:py-14">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <span className="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg shadow-primary/25">
@@ -120,7 +147,7 @@ export function GameLibrary({ userName }: { userName?: string }) {
           </motion.div>
 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div role="tablist" aria-label="Your lists" className="flex flex-wrap items-center gap-2">
+            <div role="tablist" aria-label="Your lists" className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-1 scrollbar-none sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
               {LISTS.map((list) => {
                 const selected = activeList === list.id
                 return (
@@ -130,7 +157,7 @@ export function GameLibrary({ userName }: { userName?: string }) {
                     role="tab"
                     aria-selected={selected}
                     onClick={() => setActiveList(list.id)}
-                    className={`relative inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium backdrop-blur-md transition-colors ${
+                    className={`relative inline-flex min-h-10 shrink-0 snap-start items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-medium backdrop-blur-md transition-colors ${
                       selected
                         ? "border-primary/60 text-primary-foreground"
                         : "border-white/10 bg-card/50 text-muted-foreground hover:border-primary/40 hover:text-foreground"
@@ -157,7 +184,7 @@ export function GameLibrary({ userName }: { userName?: string }) {
               })}
             </div>
 
-            <div className="flex items-center gap-1 self-start rounded-xl border border-white/10 bg-card/50 p-1 backdrop-blur-md" aria-label="Change game layout">
+            <div className="grid w-full grid-cols-2 items-center gap-1 rounded-xl border border-white/10 bg-card/50 p-1 backdrop-blur-md sm:w-auto" aria-label="Change game layout">
               <button
                 type="button"
                 aria-label="Grid view"
@@ -186,6 +213,41 @@ export function GameLibrary({ userName }: { userName?: string }) {
           </div>
         </header>
 
+        {continueGames.length > 0 ? (
+          <section aria-labelledby="continue-title" className="mb-10 rounded-2xl border border-primary/15 bg-card/40 p-4 sm:p-5">
+            <div className="mb-4 flex items-end justify-between gap-4">
+              <div>
+                <div className="mb-2 flex items-center gap-2 text-primary">
+                  <Play className="size-4 fill-current" />
+                  <span className="text-xs font-semibold uppercase tracking-[0.14em]">Pick up where you left off</span>
+                </div>
+                <h2 id="continue-title" className="font-display text-2xl font-semibold tracking-tight">Continue next time</h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveList("playing")}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground"
+              >
+                See all <ArrowRight className="size-3.5" />
+              </button>
+            </div>
+            <div className={view === "grid" ? "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4" : "flex flex-col gap-3"}>
+              {continueGames.map((game, i) => (
+                <GameCard
+                  key={`continue-${game.id}`}
+                  game={game}
+                  index={i}
+                  view={view}
+                  status={statusMap[game.id]}
+                  onSet={setStatus}
+                  onClear={clearStatus}
+                  onTagToggle={handleTagToggle}
+                />
+              ))}
+            </div>
+          </section>
+        ) : null}
+
         <section aria-live="polite">
           <AnimatePresence mode="wait">
             {games.length === 0 ? (
@@ -213,11 +275,10 @@ export function GameLibrary({ userName }: { userName?: string }) {
               </motion.div>
             ) : (
               <motion.div
-                key={`${activeList}-${view}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.25 }}
+                key={activeList}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
               >
                 <div className="mb-5">
                   <p className="text-sm text-muted-foreground">
@@ -235,7 +296,7 @@ export function GameLibrary({ userName }: { userName?: string }) {
                       status={statusMap[game.id]}
                       onSet={setStatus}
                       onClear={clearStatus}
-                      onTagToggle={setTag}
+                      onTagToggle={handleTagToggle}
                     />
                   ))}
                 </div>
