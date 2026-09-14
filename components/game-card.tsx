@@ -63,18 +63,20 @@ function StatusControls({
           )
         })}
       </div>
-      {current ? (
-        <button
-          type="button"
-          onClick={() => onClear(game.id)}
-          aria-label={`Remove ${game.name} from this list`}
-          className="inline-flex min-h-8 w-fit self-start items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:border-destructive/40 hover:text-destructive"
-        >
-          <X className="size-3" />
-          Remove
-        </button>
-      ) : null}
     </div>
+  )
+}
+
+function RemoveButton({ game, onClear }: { game: Game; onClear: (gameId: number) => void }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onClear(game.id)}
+      aria-label={`Remove ${game.name} from this list`}
+      className="pointer-events-none absolute right-0 top-0 inline-flex size-8 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-border bg-card text-muted-foreground opacity-0 shadow-sm transition-[opacity,transform,color] group-hover:pointer-events-auto group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-x-0 group-focus-within:translate-y-0 group-focus-within:opacity-100 hover:border-destructive/40 hover:text-destructive"
+    >
+      <X className="size-3.5" />
+    </button>
   )
 }
 
@@ -144,7 +146,7 @@ export function GameCard({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.22, delay: Math.min(index * 0.012, 0.12), ease: "easeOut" }}
-        className="flex flex-row gap-3 overflow-hidden rounded-2xl border border-border bg-card p-3 shadow-sm sm:gap-4"
+        className="group flex flex-row gap-3 overflow-hidden rounded-2xl border border-border bg-card p-3 shadow-sm sm:gap-4"
       >
         <div className="relative aspect-[4/3] w-28 shrink-0 overflow-hidden rounded-lg bg-muted sm:aspect-[16/10] sm:w-48">
           {game.background_image ? (
@@ -169,15 +171,18 @@ export function GameCard({
             <h3 className="font-display text-lg font-semibold leading-tight text-balance text-card-foreground">
               {game.name}
             </h3>
-            {game.metacritic ? (
-              <span
-                className={`shrink-0 rounded-md border px-2 py-0.5 font-mono text-sm font-semibold ${metacriticColor(
-                  game.metacritic,
-                )}`}
-              >
-                {game.metacritic}
-              </span>
-            ) : null}
+            <div className="relative flex items-center gap-2">
+              {game.metacritic ? (
+                <span
+                  className={`shrink-0 rounded-md border px-2 py-0.5 font-mono text-sm font-semibold ${metacriticColor(
+                    game.metacritic,
+                  )}`}
+                >
+                  {game.metacritic}
+                </span>
+              ) : null}
+              {status ? <RemoveButton game={game} onClear={onClear} /> : null}
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
@@ -254,9 +259,12 @@ export function GameCard({
           ))}
         </div>
 
-        <h3 className="font-display text-lg font-semibold leading-tight text-balance text-card-foreground">
-          {game.name}
-        </h3>
+        <div className="relative pr-8">
+          <h3 className="font-display text-lg font-semibold leading-tight text-balance text-card-foreground">
+            {game.name}
+          </h3>
+          {status ? <RemoveButton game={game} onClear={onClear} /> : null}
+        </div>
 
         <div className="flex items-center justify-between pt-1 text-sm text-muted-foreground">
           <span className="inline-flex items-center gap-1.5">
