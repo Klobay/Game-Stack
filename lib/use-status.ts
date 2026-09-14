@@ -35,8 +35,8 @@ export function useStatuses() {
   async function setTag(game: Game, tag: "horror" | "other", enabled: boolean) {
     const updated = {
       ...game,
-      horrorTagged: tag === "horror" ? enabled : false,
-      otherTagged: tag === "other" ? enabled : false,
+      horrorTagged: tag === "horror" ? enabled : game.horrorTagged,
+      otherTagged: tag === "other" ? enabled : game.otherTagged,
       horrorExcluded: undefined,
       otherExcluded: undefined,
     }

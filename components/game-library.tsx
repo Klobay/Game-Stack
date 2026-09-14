@@ -28,7 +28,19 @@ export function GameLibrary({ userName }: { userName?: string }) {
   const [activeList, setActiveList] = useState<ListId>("playing")
   const [view, setView] = useState<"grid" | "list">("grid")
   const [signingOut, setSigningOut] = useState(false)
+  const [tagNotice, setTagNotice] = useState<string | null>(null)
   const { statusMap, gamesByStatus, allGames, setStatus, clearStatus, setTag, count } = useStatuses()
+
+  async function handleTagToggle(game: Parameters<typeof setTag>[0], tag: "horror" | "other", enabled: boolean) {
+    const label = tag === "horror" ? "Horror" : "Other Games"
+    setTagNotice(`${enabled ? "Added to" : "Removed from"} ${label}: ${game.name}`)
+    window.setTimeout(() => setTagNotice(null), 2600)
+    try {
+      await setTag(game, tag, enabled)
+    } catch {
+      setTagNotice("Could not save that tag. Please try again.")
+    }
+  }
 
   async function handleSignOut() {
     setSigningOut(true)
@@ -58,6 +70,19 @@ export function GameLibrary({ userName }: { userName?: string }) {
 
   return (
     <div className="relative min-h-dvh overflow-hidden">
+      <AnimatePresence>
+        {tagNotice ? (
+          <motion.div
+            initial={{ opacity: 0, y: -12, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+            role="status"
+            className="fixed inset-x-4 top-4 z-50 mx-auto max-w-md rounded-xl border border-primary/30 bg-card/95 px-4 py-3 text-center text-sm font-medium text-foreground shadow-xl shadow-black/20 backdrop-blur-md sm:left-auto sm:right-6 sm:inset-x-auto"
+          >
+            {tagNotice}
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -left-24 -top-24 size-96 rounded-full bg-primary/15 blur-3xl motion-reduce:hidden" />
         <div className="absolute right-0 top-40 size-80 rounded-full bg-accent/15 blur-3xl motion-reduce:hidden" />
@@ -235,7 +260,7 @@ export function GameLibrary({ userName }: { userName?: string }) {
                       status={statusMap[game.id]}
                       onSet={setStatus}
                       onClear={clearStatus}
-                      onTagToggle={setTag}
+                      onTagToggle={handleTagToggle}
                     />
                   ))}
                 </div>

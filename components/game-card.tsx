@@ -102,7 +102,7 @@ function TagControls({ game, onToggle }: { game: Game; onToggle: (game: Game, ta
             key={key}
             type="button"
             aria-pressed={active}
-            aria-label={`${active ? "Remove" : "Add"} ${label} tag for ${game.name}`}
+            aria-label={`${active ? "Remove from" : "Add to"} ${label} for ${game.name}`}
             onClick={() => onToggle(game, key, !active)}
             className={`inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border px-2 py-2 text-xs font-medium transition-[background-color,border-color,color,transform] active:scale-[0.98] sm:min-h-9 sm:rounded-lg ${
               active
@@ -111,7 +111,7 @@ function TagControls({ game, onToggle }: { game: Game; onToggle: (game: Game, ta
             }`}
           >
             <Icon className="size-4 shrink-0" />
-            <span>{active ? label : `Add ${label}`}</span>
+            <span>{active ? `In ${label}` : `Add to ${label}`}</span>
           </button>
         ))}
       </div>
